@@ -36,25 +36,23 @@ class ShowPlayerList:
         )
 
     @staticmethod
-    def show_player_in_tournament_az(player, points):
+    def show_player_in_tournament_az(player):
         print(
-            f"{player.last_name} {player.first_name} - Rank: {player.rank} - "
-            f"Total points: {float(points)}"
+            f"{player['last_name']} {player['first_name']} - Rank: {player['rank']} - "
+            f"Total points: {player['points']}"
         )
 
     @staticmethod
-    def show_player_in_tournament_rank(player, points):
+    def show_player_in_tournament_rank(player):
         print(
-            f"Rank: {player.rank} - {player.first_name} {player.last_name} - "
-            f"Total points: {float(points)}"
+            f"Rank: {player['rank']} - {player['first_name']} {player['last_name']} - "
+            f"Total points: {player['points']}"
         )
 
     @staticmethod
     def show_player_in_tournament_points(player):
         print(
-            f"Total points: {player.points} - "
-            f"{player.first_name} {player.last_name} - "
-            f"Rank: {player.rank}"
-
-
+            f"Total points: {player['points']} - "
+            f"{player['first_name']} {player['last_name']} - "
+            f"Rank: {player['rank']}"
         )

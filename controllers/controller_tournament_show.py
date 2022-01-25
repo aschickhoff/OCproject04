@@ -28,86 +28,24 @@ class ShowTournamentDB:
         player = models.Player.deserialize_player(player_from_db)
         return player
 
-    def show_player_in_tournament_az(self):
+    def show_player_in_tournament(self, method):
         tournament = self.select_tournament()
-        listed_players = tournament.players
-        players = []
         rounds_in_tournament = tournament.rounds
         rounds_serialized = []
         for i in range(len(rounds_in_tournament)):
             rounds_serialized.append(rounds_in_tournament[i].serialize_round())
-        for i in range(len(listed_players)):
-            players.append(db_table_player.get(doc_id=int(listed_players[i])))
-        players_sorted = sorted(players, key=lambda contestant: contestant["last_name"])
-        available_players = []
-        for player in players_sorted:
-            available_players.append(models.Player.deserialize_player(player))
-        for player in available_players:
-            total_points = 0
-            for i in range(len(rounds_serialized)):
-                matches = rounds_serialized[i]["matches"]
-                for n in range(len(matches)):
-                    if matches[n][0][0] == player.player_id:
-                        total_points = total_points + matches[n][0][1]
-                    elif matches[n][1][0] == player.player_id:
-                        total_points = total_points + matches[n][1][1]
-            self.show_player_list.show_player_in_tournament_az(player, total_points)
-
-    def show_player_in_tournament_rank(self):
-        tournament = self.select_tournament()
         listed_players = tournament.players
-        players = []
-        rounds_in_tournament = tournament.rounds
-        rounds_serialized = []
-        for i in range(len(rounds_in_tournament)):
-            rounds_serialized.append(rounds_in_tournament[i].serialize_round())
-        for i in range(len(listed_players)):
-            players.append(db_table_player.get(doc_id=int(listed_players[i])))
-        players_sorted = sorted(players, key=lambda contestant: contestant["rank"], reverse=False)
-        available_players = []
-        for player in players_sorted:
-            available_players.append(models.Player.deserialize_player(player))
-        for player in available_players:
-            total_points = 0
-            for i in range(len(rounds_serialized)):
-                matches = rounds_serialized[i]["matches"]
-                for n in range(len(matches)):
-                    if matches[n][0][0] == player.player_id:
-                        total_points = total_points + matches[n][0][1]
-                    elif matches[n][1][0] == player.player_id:
-                        total_points = total_points + matches[n][1][1]
-            self.show_player_list.show_player_in_tournament_rank(player, total_points)
-
-    def show_player_in_tournament_points(self):
-        tournament = self.select_tournament()
-        listed_players = tournament.players
-        players = []
-        rounds_in_tournament = tournament.rounds
-        rounds_serialized = []
-        for i in range(len(rounds_in_tournament)):
-            rounds_serialized.append(rounds_in_tournament[i].serialize_round())
-        for i in range(len(listed_players)):
-            players.append(db_table_player.get(doc_id=int(listed_players[i])))
-        available_players = []
-        for player in players:
-            available_players.append(models.Player.deserialize_player(player))
-        for player in available_players:
-            total_points = 0
-            for i in range(len(rounds_serialized)):
-                matches = rounds_serialized[i]["matches"]
-                for n in range(len(matches)):
-                    if matches[n][0][0] == player.player_id:
-                        total_points = total_points + matches[n][0][1]
-                    elif matches[n][1][0] == player.player_id:
-                        total_points = total_points + matches[n][1][1]
-            player.points = float(total_points)
-            db_table_player.update({"points": player.points}, doc_ids=[player.player_id])
-        players_sorted = sorted(players, key=lambda contestant: contestant["points"], reverse=True)
-        available_players_sorted = []
-        for player in players_sorted:
-            available_players_sorted.append(models.Player.deserialize_player(player))
-        for player in available_players_sorted:
-            self.show_player_list.show_player_in_tournament_points(player)
+        players_updated = self.calculate_points(rounds_serialized, listed_players)
+        for i in range(8):
+            if method == "rank":
+                players_sorted = sorted(players_updated, key=lambda contestant: contestant[method])
+                self.show_player_list.show_player_in_tournament_rank(players_sorted[i])
+            elif method == "last_name":
+                players_sorted = sorted(players_updated, key=lambda contestant: contestant[method])
+                self.show_player_list.show_player_in_tournament_az(players_sorted[i])
+            else:
+                players_sorted = sorted(players_updated, key=lambda contestant: contestant[method], reverse=True)
+                self.show_player_list.show_player_in_tournament_points(players_sorted[i])
 
     def show_rounds_in_tournament(self):
         tournament = self.select_tournament()
@@ -153,3 +91,27 @@ class ShowTournamentDB:
             return tournament
         else:
             self.messages.invalid_input()
+
+    @staticmethod
+    def calculate_points(rounds_serialized, listed_players):
+        players = []
+        for i in range(len(listed_players)):
+            players.append(db_table_player.get(doc_id=int(listed_players[i])))
+        available_players = []
+        for player in players:
+            available_players.append(models.Player.deserialize_player(player))
+        for player in available_players:
+            total_points = 0
+            for i in range(len(rounds_serialized)):
+                matches = rounds_serialized[i]["matches"]
+                for n in range(len(matches)):
+                    if matches[n][0][0] == player.player_id:
+                        total_points = total_points + matches[n][0][1]
+                    elif matches[n][1][0] == player.player_id:
+                        total_points = total_points + matches[n][1][1]
+            player.points = float(total_points)
+            db_table_player.update({"points": player.points}, doc_ids=[player.player_id])
+            players = []
+            for i in range(len(listed_players)):
+                players.append(db_table_player.get(doc_id=int(listed_players[i])))
+        return players

@@ -68,6 +68,15 @@ class RunTournament:
         return number_of_rounds, available_players, tournament
 
     def create_first_round(self, players, round_number, tournament):
+        """
+        Creation of first round:
+        Players are sorted by rank and then matched:
+        player[0] - player[4]
+        player[1] - player[5]
+        player[2] - player[6]
+        player[3] - player[7]
+        for later use the pairings are stored in the database
+        """
         start_time = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
         listed_players = players
         players_to_match = []
@@ -97,6 +106,15 @@ class RunTournament:
         db_table_tournament.update({"pairings": pairings}, doc_ids=[int(tournament.tournament_id)])
 
     def create_next_round(self, players, round_number, tournament):
+        """
+        Creation of rounds after first round:
+        Players are sorted by points and then by rank, in case possible opponents got the same amount of points
+        player[0] - player[1]
+        player[2] - player[3]
+        player[4] - player[5]
+        player[6] - player[7]
+        If Player 1 has already played Player 2, Player 3 will be used etc.
+        """
         start_time = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
         listed_players = players
         players_to_be_matched = []

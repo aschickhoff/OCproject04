@@ -23,27 +23,30 @@ class ReportMenu:
             input(self.inputs.press_key_input())
             return 9
         elif menu_choice == "3":
-            self.tournament_db.show_player_in_tournament_az()
+            method = "last_name"
+            self.tournament_db.show_player_in_tournament(method)
             input(self.inputs.press_key_input())
             return 9
         elif menu_choice == "4":
-            self.tournament_db.show_player_in_tournament_rank()
+            method = "rank"
+            self.tournament_db.show_player_in_tournament(method)
             input(self.inputs.press_key_input())
             return 9
         elif menu_choice == "5":
-            self.tournament_db.show_tournament_in_db()
+            method = "points"
+            self.tournament_db.show_player_in_tournament(method)
             input(self.inputs.press_key_input())
             return 9
         elif menu_choice == "6":
-            self.tournament_db.show_rounds_in_tournament()
+            self.tournament_db.show_tournament_in_db()
             input(self.inputs.press_key_input())
             return 9
         elif menu_choice == "7":
-            self.tournament_db.show_matches_in_tournament()
+            self.tournament_db.show_rounds_in_tournament()
             input(self.inputs.press_key_input())
             return 9
-        elif menu_choice == "9":
-            self.tournament_db.show_player_in_tournament_points()
+        elif menu_choice == "8":
+            self.tournament_db.show_matches_in_tournament()
             input(self.inputs.press_key_input())
             return 9
         elif menu_choice == "0":
