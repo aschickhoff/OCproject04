@@ -13,7 +13,7 @@ class Inputs:
 
     @staticmethod
     def player_to_edit():
-        return "What player do you want to edit (ID)? "
+        return "\nWhat player do you want to edit (ID)? "
 
     @staticmethod
     def select_tournament():
@@ -76,8 +76,7 @@ class Inputs:
 
     @staticmethod
     def enter_time_control():
-        return "Choose time control:\n(a) Bullet\n(b) Blitz\n(c) Rapid" \
-               "\nYour choice? "
+        return "Choose time control:\n(a) Bullet\n(b) Blitz\n(c) Rapid\nYour choice? "
 
     @staticmethod
     def enter_description():
@@ -85,5 +84,4 @@ class Inputs:
 
     @staticmethod
     def ask_for_result(player_one_first_name, player_one_last_name):
-        return f"Did {player_one_first_name} {player_one_last_name} " \
-               f"(w)in, (l)ose or was it a (d)raw? "
+        return f"Did {player_one_first_name} {player_one_last_name} (w)in, (l)ose or was it a (d)raw? "

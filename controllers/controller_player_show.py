@@ -21,9 +21,7 @@ class ShowPlayerDB:
     def show_players_alphabetical(self):
         available_players = []
         players = db_table_player.all()
-        players_sorted = sorted(
-            players, key=lambda contestant: contestant["last_name"]
-        )
+        players_sorted = sorted(players, key=lambda contestant: contestant["last_name"])
         self.show_list.show_players_headline_az()
         for player in players_sorted:
             available_players.append(models.Player.deserialize_player(player))
@@ -33,9 +31,7 @@ class ShowPlayerDB:
     def show_players_by_rank(self):
         available_players = []
         players = db_table_player.all()
-        players_sorted = sorted(
-            players, key=lambda contestant: contestant["rank"], reverse=False
-        )
+        players_sorted = sorted(players, key=lambda contestant: contestant["rank"], reverse=False)
         self.show_list.show_players_headline_rank()
         for player in players_sorted:
             available_players.append(models.Player.deserialize_player(player))

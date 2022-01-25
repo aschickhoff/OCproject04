@@ -29,7 +29,7 @@ class RunTournament:
         rounds_played, players, tournament = self.select_tournament()
         if rounds_played == 0:
             self.create_first_round(players, rounds_played + 1, tournament)
-        elif rounds_played > 0 and rounds_played < 4:
+        elif rounds_played < 4:
             self.create_next_round(players, rounds_played + 1, tournament)
         elif rounds_played == 4:
             self.messages.tournament_ended()
@@ -70,51 +70,31 @@ class RunTournament:
     def create_first_round(self, players, round_number, tournament):
         start_time = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
         listed_players = players
-        players_to_be_matched = []
+        players_to_match = []
         matches = []
         pairings = []
         name_of_round = "Round " + str(round_number)
         for i in range(len(listed_players)):
-            players_to_be_matched.append(
-                db_table_player.get(doc_id=int(listed_players[i]))
-            )
-        players_sorted_by_rank = sorted(
-            players_to_be_matched,
-            key=lambda contestant: contestant["rank"],
-            reverse=False
-        )
+            players_to_match.append(db_table_player.get(doc_id=int(listed_players[i])))
+        players_sorted_by_rank = sorted(players_to_match, key=lambda contestant: contestant["rank"], reverse=False)
         for i in range(4):
             match = (
-                [players_sorted_by_rank[i]["player_id"],
-                 players_sorted_by_rank[i]["points"]],
-                [players_sorted_by_rank[i + 4]["player_id"],
-                 players_sorted_by_rank[i + 4]["points"]]
+                [players_sorted_by_rank[i]["player_id"], players_sorted_by_rank[i]["points"]],
+                [players_sorted_by_rank[i + 4]["player_id"], players_sorted_by_rank[i + 4]["points"]]
             )
             matches.append(match)
             pairing = (
-                [players_sorted_by_rank[i]["player_id"],
-                 players_sorted_by_rank[i + 4]["player_id"]],
-                [players_sorted_by_rank[i + 4]["player_id"],
-                 players_sorted_by_rank[i]["player_id"]]
+                [players_sorted_by_rank[i]["player_id"], players_sorted_by_rank[i + 4]["player_id"]],
+                [players_sorted_by_rank[i + 4]["player_id"], players_sorted_by_rank[i]["player_id"]]
             )
             pairings.append(pairing)
         results = self.round_results(matches)
         end_time = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
-        active_round = models.Round(
-            name_of_round,
-            start_time,
-            end_time,
-            results
-        )
-        round_serialized = []
-        round_serialized.append(active_round.serialize_round())
+        active_round = models.Round(name_of_round, start_time, end_time, results)
+        round_serialized = [active_round.serialize_round()]
         tournament.rounds = round_serialized
-        db_table_tournament.update(
-            {"rounds": tournament.rounds},
-            doc_ids=[int(tournament.tournament_id)]
-        )
-        db_table_tournament.update({"pairings": pairings},
-                                   doc_ids=[int(tournament.tournament_id)])
+        db_table_tournament.update({"rounds": tournament.rounds}, doc_ids=[int(tournament.tournament_id)])
+        db_table_tournament.update({"pairings": pairings}, doc_ids=[int(tournament.tournament_id)])
 
     def create_next_round(self, players, round_number, tournament):
         start_time = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
@@ -124,66 +104,46 @@ class RunTournament:
         pairings = []
         name_of_round = "Round " + str(round_number)
         for i in range(len(listed_players)):
-            players_to_be_matched.append(
-                db_table_player.get(doc_id=int(listed_players[i]))
-            )
-        players_sorted_by_points = self.sort_player_by_points_and_rank(
-            tournament
-        )
+            players_to_be_matched.append(db_table_player.get(doc_id=int(listed_players[i])))
+        players_sorted_by_points = self.sort_player_by_points_and_rank(tournament)
         current_pairings = []
         for i in range(len(players_sorted_by_points)):
             while players_sorted_by_points[i].player_id not in current_pairings:
                 n = i + 1
                 while (
                         n < len(players_sorted_by_points)
-                        and players_sorted_by_points[n].player_id
-                        in current_pairings
-                        or any([players_sorted_by_points[i].player_id,
-                                players_sorted_by_points[n].player_id]
+                        and players_sorted_by_points[n].player_id in current_pairings
+                        or any([players_sorted_by_points[i].player_id, players_sorted_by_points[n].player_id]
                                in x for x in tournament.pairings
                                )
                 ):
                     n += 1
                 match = (
-                    [players_sorted_by_points[i].player_id,
-                     players_sorted_by_points[i].points],
-                    [players_sorted_by_points[n].player_id,
-                     players_sorted_by_points[n].points]
+                    [players_sorted_by_points[i].player_id, players_sorted_by_points[i].points],
+                    [players_sorted_by_points[n].player_id, players_sorted_by_points[n].points]
                 )
                 current_pairings.append(players_sorted_by_points[i].player_id)
                 current_pairings.append(players_sorted_by_points[n].player_id)
                 matches.append(match)
                 pairing = (
-                    [players_sorted_by_points[i].player_id,
-                     players_sorted_by_points[n].player_id],
-                    [players_sorted_by_points[n].player_id,
-                     players_sorted_by_points[i].player_id]
+                    [players_sorted_by_points[i].player_id, players_sorted_by_points[n].player_id],
+                    [players_sorted_by_points[n].player_id, players_sorted_by_points[i].player_id]
                 )
                 pairings.append(pairing)
             i += 1
         results = self.round_results(matches)
         end_time = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
-        active_round = models.Round(
-            name_of_round,
-            start_time,
-            end_time,
-            results
-        )
-        round_serialized = []
-        round_serialized.append(active_round.serialize_round())
+        active_round = models.Round(name_of_round, start_time, end_time, results)
+        round_serialized = [active_round.serialize_round()]
         temp_round = tournament.rounds
         temp_round_serialized = []
         for i in range(len(temp_round)):
             temp_round_serialized.append(temp_round[i].serialize_round())
         temp_round_serialized.extend(round_serialized)
-        db_table_tournament.update(
-            {"rounds": temp_round_serialized},
-            doc_ids=[int(tournament.tournament_id)]
-        )
+        db_table_tournament.update({"rounds": temp_round_serialized}, doc_ids=[int(tournament.tournament_id)])
         temp_pairings = tournament.pairings
         temp_pairings.extend(pairings)
-        db_table_tournament.update({"pairings": temp_pairings},
-                                   doc_ids=[int(tournament.tournament_id)])
+        db_table_tournament.update({"pairings": temp_pairings}, doc_ids=[int(tournament.tournament_id)])
 
     @staticmethod
     def sort_player_by_points_and_rank(tournament):
@@ -197,8 +157,7 @@ class RunTournament:
             players.append(db_table_player.get(doc_id=int(listed_players[i])))
         available_players = []
         for player in players:
-            available_players.append(
-                models.Player.deserialize_player(player))
+            available_players.append(models.Player.deserialize_player(player))
         available_players_with_points = []
         for player in available_players:
             total_points = 0
@@ -211,11 +170,9 @@ class RunTournament:
                         total_points = total_points + matches[n][1][1]
             player.points = total_points
             available_players_with_points.append(player)
-        players_sorted_new = sorted(sorted(
-            available_players_with_points,
-            key=lambda contestant: contestant.rank),
-            key=lambda contestant: contestant.points,
-            reverse=True
+        players_sorted_new = sorted(
+            sorted(available_players_with_points, key=lambda contestant: contestant.rank),
+            key=lambda contestant: contestant.points, reverse=True
         )
         return players_sorted_new
 
@@ -235,21 +192,11 @@ class RunTournament:
             player_two_last_name = db_table_player.get(
                 doc_id=int(matches[i][1][0]))["last_name"]
             self.show_list.current_match(
-                player_one_first_name,
-                player_one_last_name,
-                player_two_first_name,
-                player_two_last_name
+                player_one_first_name, player_one_last_name, player_two_first_name, player_two_last_name
             )
             point_distribution = True
             while point_distribution:
-                result = input(self.inputs.ask_for_result(
-                    player_one_first_name,
-                    player_one_last_name)
-                )
-                # result = input(f"Did {player_one_first_name} "
-                #                f"{player_one_last_name} "
-                #                f"(w)in, (l)ose or was it a (d)raw?"
-                #                )
+                result = input(self.inputs.ask_for_result(player_one_first_name, player_one_last_name))
                 if result == "w":
                     current_match = ([player_one_id, 1], [player_two_id, 0])
                     point_distribution = False

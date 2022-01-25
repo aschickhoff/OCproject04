@@ -61,9 +61,10 @@ class Tournament:
         end_date = serialized_tournament["end_date"]
         time_control = serialized_tournament["time_control"]
         description = serialized_tournament["description"]
-        rounds = [models.Round.deserialize_round(serialized_round)
-                  for serialized_round in serialized_tournament["rounds"]
-                  ]
+        rounds = [
+            models.Round.deserialize_round(serialized_round)
+            for serialized_round in serialized_tournament["rounds"]
+        ]
         pairings = serialized_tournament["pairings"]
         amount_of_rounds = serialized_tournament["amount_of_rounds"]
         tournament_id = serialized_tournament["tournament_id"]

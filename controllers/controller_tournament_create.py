@@ -71,7 +71,6 @@ class CreateTournament:
                 if participant_id in players_added:
                     self.messages.player_already_added()
                     continue
-
                 players_added.append(participant_id)
                 amount_of_participants += 1
             else:
@@ -80,33 +79,25 @@ class CreateTournament:
         return players_added
 
     def input_tournament_name(self):
-        tournament_name = input(
-                self.inputs.enter_tournament_name()
-            )
+        tournament_name = input(self.inputs.enter_tournament_name())
         return tournament_name
 
     def input_venue(self):
-        venue = input(
-                self.inputs.enter_venue()
-            )
+        venue = input(self.inputs.enter_venue())
         return venue
 
     def input_duration(self):
         temp_duration = input(self.inputs.enter_duration())
         if temp_duration.isdigit():
             duration = int(temp_duration)
-            end_date = (
-                    datetime.now() + timedelta(days=duration)
-            ).strftime("%d/%m/%Y")
+            end_date = (datetime.now() + timedelta(days=duration)).strftime("%d/%m/%Y")
             return end_date
         else:
             self.messages.invalid_input()
             return self.input_duration()
 
     def input_time_control(self):
-        time_control = input(
-                self.inputs.enter_time_control()
-            )
+        time_control = input(self.inputs.enter_time_control())
         if time_control.lower() in TIME_CONTROL:
             if time_control.lower() == "a":
                 time_control = "Bullet"
@@ -120,7 +111,5 @@ class CreateTournament:
             return self.input_time_control()
 
     def input_description(self):
-        description = input(
-                self.inputs.enter_description()
-            )
+        description = input(self.inputs.enter_description())
         return description

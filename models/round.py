@@ -15,9 +15,4 @@ class Round:
         start_time = serialized_round["start_time"]
         end_time = serialized_round["end_time"]
         matches = serialized_round["matches"]
-        return Round(
-            round_name,
-            start_time,
-            end_time,
-            matches
-        )
+        return Round(round_name, start_time, end_time, matches)

@@ -5,16 +5,7 @@ db_table_player = db.table("players")
 
 
 class Player:
-    def __init__(
-            self,
-            last_name,
-            first_name,
-            birth_date,
-            gender,
-            player_id,
-            rank,
-            points
-    ):
+    def __init__(self, last_name, first_name, birth_date, gender, player_id, rank, points):
         self.last_name = last_name.capitalize()
         self.first_name = first_name.capitalize()
         self.birth_date = birth_date
@@ -25,15 +16,8 @@ class Player:
 
     def __repr__(self):
         return(
-            f"Player("
-            f"{self.last_name},"
-            f"{self.first_name},"
-            f"{self.birth_date},"
-            f"{self.gender},"
-            f"{self.player_id},"
-            f"{self.rank},"
-            f"{self.points}"
-            f")"
+            f"Player({self.last_name}, {self.first_name}, {self.birth_date}, "
+            f"{self.gender}, {self.player_id}, {self.rank}, {self.points})"
         )
 
     def serialize_player(self):
@@ -48,15 +32,7 @@ class Player:
         player_id = serialized_player["player_id"]
         rank = serialized_player["rank"]
         points = serialized_player["points"]
-        return Player(
-            last_name,
-            first_name,
-            birth_date,
-            gender,
-            player_id,
-            rank,
-            points
-        )
+        return Player(last_name, first_name, birth_date, gender, player_id, rank, points)
 
     def save_to_player_db(self):
         db_table_player.insert(self.serialize_player())

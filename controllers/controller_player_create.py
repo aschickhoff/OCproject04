@@ -26,21 +26,11 @@ class CreatePlayer:
         birth_date = self.input_birth_date()
         gender = self.input_gender()
         player_id = new_player_id
-        player = models.Player(
-            last_name,
-            first_name,
-            birth_date,
-            gender,
-            player_id,
-            rank=0,
-            points=0
-        )
+        player = models.Player(last_name, first_name, birth_date, gender, player_id, rank=0, points=0)
         player.save_to_player_db()
 
     def input_last_name(self):
-        last_name = input(
-                self.inputs.enter_last_name()
-            )
+        last_name = input(self.inputs.enter_last_name())
         if isinstance(last_name, str) and last_name.isalpha():
             return last_name
         else:
@@ -48,9 +38,7 @@ class CreatePlayer:
             return self.input_last_name()
 
     def input_first_name(self):
-        first_name = input(
-                self.inputs.enter_first_name()
-            )
+        first_name = input(self.inputs.enter_first_name())
         if isinstance(first_name, str) and first_name.isalpha():
             return first_name
         else:
@@ -58,15 +46,11 @@ class CreatePlayer:
             return self.input_first_name()
 
     def input_birth_date(self):
-        birth_date = input(
-                self.inputs.enter_birth_date()
-            )
+        birth_date = input(self.inputs.enter_birth_date())
         return birth_date
 
     def input_gender(self):
-        gender = input(
-                self.inputs.enter_gender()
-            )
+        gender = input(self.inputs.enter_gender())
         if gender.lower() in GENDERS:
             return gender
         else:

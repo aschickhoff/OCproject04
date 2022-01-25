@@ -22,8 +22,7 @@ class EditPlayer:
             new_rank = input(self.inputs.enter_new_rank())
             if new_rank.isdigit():
                 player.rank = new_rank
-                db_table_player.update({"rank": int(player.rank)},
-                                       doc_ids=[int(userid)])
+                db_table_player.update({"rank": int(player.rank)}, doc_ids=[int(userid)])
             else:
                 self.messages.invalid_input()
                 return self.edit_player_rank()
